@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1140 730" width="1140" height="730" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1F2D3A"/>
+    </marker>
+    <style>
+      .title { font-size: 15px; font-weight: 600; fill: #1F2D3A; }
+      .sub { font-size: 12px; fill: #3d4b58; }
+      .label { font-size: 12px; fill: #1F2D3A; }
+      .owner { font-size: 12px; font-weight: 600; fill: #5b6772; }
+      .box { fill: #ffffff; stroke: #1F2D3A; stroke-width: 1.5; }
+      .line { stroke: #1F2D3A; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1140" height="730" fill="#ffffff"/>
+
+  <!-- Navegador -->
+  <rect x="40" y="40" width="200" height="100" rx="8" fill="#FFF3E0" stroke="#C77D2E" stroke-width="1.5"/>
+  <text x="140" y="72" text-anchor="middle" class="title">Navegador</text>
+  <text x="140" y="94" text-anchor="middle" class="sub">index.html · script.js</text>
+  <text x="140" y="112" text-anchor="middle" class="sub">style.css</text>
+  <text x="140" y="130" text-anchor="middle" class="owner">Pessoa 3</text>
+
+  <!-- Navegador <-> app.py -->
+  <line x1="100" y1="140" x2="100" y2="198" class="line"/>
+  <text x="94" y="174" text-anchor="end" class="label">pergunta</text>
+  <line x1="180" y1="200" x2="180" y2="142" class="line"/>
+  <text x="188" y="174" class="label">JSON</text>
+
+  <!-- app.py -->
+  <rect x="40" y="200" width="200" height="400" rx="8" fill="#FFF3E0" stroke="#C77D2E" stroke-width="1.5"/>
+  <text x="140" y="232" text-anchor="middle" class="title">app.py (Flask)</text>
+  <text x="140" y="254" text-anchor="middle" class="sub">GET /search?q=...</text>
+  <text x="140" y="276" text-anchor="middle" class="owner">Pessoa 3</text>
+  <text x="60" y="420" class="sub">1. classify_query</text>
+  <text x="60" y="440" class="sub">2. extract_params</text>
+  <text x="60" y="460" class="sub">3. run_intent</text>
+  <text x="60" y="480" class="sub">4. devolve JSON</text>
+
+  <!-- app.py <-> nlp.py -->
+  <line x1="240" y1="300" x2="358" y2="300" class="line"/>
+  <text x="300" y="292" text-anchor="middle" class="label">texto</text>
+  <line x1="360" y1="380" x2="242" y2="380" class="line"/>
+  <text x="300" y="398" text-anchor="middle" class="label">intent_id, score,</text>
+  <text x="300" y="414" text-anchor="middle" class="label">params</text>
+
+  <!-- intents.py -->
+  <rect x="740" y="40" width="360" height="80" rx="8" class="box"/>
+  <text x="920" y="70" text-anchor="middle" class="title">intents.py</text>
+  <text x="920" y="92" text-anchor="middle" class="sub">intenções · frases de referência · chaves de params</text>
+  <text x="920" y="110" text-anchor="middle" class="owner">Todos</text>
+  <line x1="920" y1="120" x2="920" y2="198" class="line"/>
+  <text x="928" y="164" class="label">frases de referência → fit()</text>
+
+  <!-- nlp.py -->
+  <rect x="360" y="200" width="740" height="230" rx="10" fill="#E8F1FA" stroke="#2B7BB9" stroke-width="1.5"/>
+  <text x="378" y="226" class="title">nlp.py</text>
+  <text x="1084" y="226" text-anchor="end" class="owner">Pessoa 2</text>
+
+  <rect x="380" y="242" width="180" height="96" rx="6" class="box"/>
+  <text x="470" y="266" text-anchor="middle" class="title">Pré-processamento</text>
+  <text x="470" y="288" text-anchor="middle" class="sub">minúsculas · sem acentos</text>
+  <text x="470" y="306" text-anchor="middle" class="sub">sem pontuação · stopwords</text>
+  <text x="470" y="324" text-anchor="middle" class="sub">correção · stem RSLP</text>
+  <line x1="560" y1="290" x2="588" y2="290" class="line"/>
+
+  <rect x="590" y="242" width="120" height="96" rx="6" class="box"/>
+  <text x="650" y="282" text-anchor="middle" class="title">Bag of Words</text>
+  <text x="650" y="304" text-anchor="middle" class="sub">transform()</text>
+  <line x1="710" y1="290" x2="738" y2="290" class="line"/>
+
+  <rect x="740" y="242" width="140" height="96" rx="6" class="box"/>
+  <text x="810" y="282" text-anchor="middle" class="title">Cosseno</text>
+  <text x="810" y="304" text-anchor="middle" class="sub">vs. frases de ref.</text>
+  <line x1="880" y1="290" x2="908" y2="290" class="line"/>
+
+  <rect x="910" y="242" width="170" height="96" rx="6" class="box"/>
+  <text x="995" y="272" text-anchor="middle" class="title">Mais similar</text>
+  <text x="995" y="294" text-anchor="middle" class="sub">(intent_id, score)</text>
+  <text x="995" y="312" text-anchor="middle" class="sub">score &lt; limiar → unknown</text>
+
+  <rect x="380" y="358" width="180" height="56" rx="6" class="box"/>
+  <text x="470" y="391" text-anchor="middle" class="title">extract_params</text>
+  <line x1="560" y1="386" x2="588" y2="386" class="line"/>
+  <rect x="590" y="358" width="490" height="56" rx="6" class="box"/>
+  <text x="835" y="391" text-anchor="middle" class="sub">vocabulário do domínio + regex → {categoria, origem, ano}</text>
+
+  <!-- app.py <-> queries.py -->
+  <line x1="240" y1="530" x2="358" y2="530" class="line"/>
+  <text x="300" y="522" text-anchor="middle" class="label">intent_id, params</text>
+  <line x1="360" y1="575" x2="242" y2="575" class="line"/>
+  <text x="300" y="593" text-anchor="middle" class="label">answer, images</text>
+
+  <!-- queries.py -->
+  <rect x="360" y="480" width="740" height="120" rx="10" fill="#EAF5EE" stroke="#2E7D4F" stroke-width="1.5"/>
+  <text x="378" y="506" class="title">queries.py</text>
+  <text x="1084" y="506" text-anchor="end" class="owner">Pessoa 1</text>
+
+  <rect x="380" y="518" width="260" height="66" rx="6" class="box"/>
+  <text x="510" y="546" text-anchor="middle" class="title">run_intent</text>
+  <text x="510" y="568" text-anchor="middle" class="sub">uma consulta por intenção</text>
+  <line x1="640" y1="551" x2="678" y2="551" class="line"/>
+
+  <rect x="680" y="518" width="220" height="66" rx="6" class="box"/>
+  <text x="790" y="546" text-anchor="middle" class="title">DataFrame Pandas</text>
+  <text x="790" y="568" text-anchor="middle" class="sub">filtros · contagens</text>
+
+  <!-- Dados -->
+  <rect x="680" y="640" width="220" height="60" rx="6" fill="#F4EFE8" stroke="#A0703C" stroke-width="1.5"/>
+  <text x="790" y="666" text-anchor="middle" class="title">data/metadata.csv</text>
+  <text x="790" y="686" text-anchor="middle" class="owner">Pessoa 1</text>
+  <line x1="790" y1="640" x2="790" y2="586" class="line"/>
+  <text x="798" y="618" class="label">pd.read_csv</text>
+
+  <rect x="40" y="640" width="200" height="60" rx="6" fill="#F4EFE8" stroke="#A0703C" stroke-width="1.5"/>
+  <text x="140" y="666" text-anchor="middle" class="title">static/imagens/</text>
+  <text x="140" y="686" text-anchor="middle" class="owner">Pessoa 1</text>
+  <line x1="140" y1="640" x2="140" y2="602" class="line"/>
+  <text x="148" y="626" class="label">servidas pelo Flask</text>
+</svg>

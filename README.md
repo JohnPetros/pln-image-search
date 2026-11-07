@@ -1,8 +1,12 @@
+<p align="center">
+  <img src="static/logo.png" alt="Logo do projeto" width="160">
+</p>
+
 # PC.6 — Busca semântica de imagens de sensoriamento remoto
 
 Trabalho prático PC.6 da disciplina de Processamento de Linguagem Natural (Prof. Fabrício Galende Marques de Carvalho).
 
-Motor de busca em linguagem natural sobre um catálogo de imagens de sensoriamento remoto. O usuário digita uma pergunta, o sistema a representa como **Bag of Words**, compara com frases de referência por **similaridade de cosseno** e executa a consulta correspondente em um **DataFrame Pandas** carregado de um arquivo CSV.
+Motor de busca em linguagem natural sobre um catálogo de imagens de sensoriamento remoto. O usuário digita uma pergunta, o sistema a representa como **Bag of Words**, compara com frases de referência por **similaridade de cosseno** e, de acordo com a frase de referência mais similar, executa a consulta correspondente em um **DataFrame Pandas** carregado de um arquivo CSV.
 
 **Stack:** Python 3, Flask, Pandas, scikit-learn e NLTK.
 
@@ -16,6 +20,12 @@ python app.py
 ```
 
 Depois, abra http://127.0.0.1:5000 no navegador.
+
+## Arquitetura
+
+![Arquitetura do sistema](docs/arquitetura.png)
+
+O diagrama editável está em [`docs/arquitetura.svg`](docs/arquitetura.svg).
 
 ## Fluxo de uma busca
 
@@ -42,10 +52,12 @@ Exemplo:
 | `data/metadata.csv` | Pessoa 1 | Catálogo das imagens. |
 | `static/imagens/` | Pessoa 1 | Arquivos das imagens (reais). |
 | `queries.py` | Pessoa 1 | `run_intent`: uma consulta Pandas por intenção. |
-| `nlp.py` | Pessoa 2 | `classify_query` e `extract_params`: pré-processamento, correção de digitação, BOW, cosseno e votação. |
+| `nlp.py` | Pessoa 2 | `classify_query` e `extract_params`: pré-processamento, correção de digitação, BOW e cosseno. |
 | `app.py` | Pessoa 3 | Servidor Flask com as rotas `/` (página) e `/search` (JSON). |
 | `templates/index.html`, `static/script.js`, `static/style.css` | Pessoa 3 | Página única: campo de busca, resposta e galeria de imagens. |
 | `requirements.txt`, `README.md` | Pessoa 3 | Dependências e documentação. |
+| `docs/arquitetura.svg`, `docs/arquitetura.png` | Pessoa 3 | Diagrama da arquitetura (editar o SVG e regenerar o PNG). |
+| `static/logo.png` | — | Logo do projeto. |
 
 ## Base de metadados
 
@@ -63,8 +75,8 @@ Arquivo `data/metadata.csv`, uma linha por imagem:
 ### `classify_query(text) -> (intent_id, score)` — `nlp.py`
 
 - O vetorizador BOW é ajustado (`fit`) **somente** nas frases de referência de `intents.py`. Na pergunta do usuário usa-se `transform`, nunca `fit_transform`.
-- A intenção é decidida por **votação entre as 3 frases de referência mais similares** (cosseno).
-- `score` é a **média dos cossenos das frases que votaram na intenção vencedora**. Em caso de empate (1 voto para cada), vence a intenção da frase com maior cosseno, e o score é esse cosseno.
+- A pergunta é comparada por similaridade de cosseno com cada frase de referência. A intenção é a da **frase de referência mais similar**, como pede o enunciado.
+- `score` é o **cosseno dessa frase mais similar**.
 - Se o score ficar abaixo do limiar, ou se o vetor da pergunta for todo zero, retorna `"unknown"`. O limiar deve ser calibrado com perguntas de teste.
 
 ### `extract_params(text) -> dict` — `nlp.py`
