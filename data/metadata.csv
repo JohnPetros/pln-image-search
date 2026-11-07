@@ -1,0 +1,24 @@
+arquivo,categoria,data,origem
+static/imagens/vegetacao_drone_01.jpg,vegetação,24/04/2016,drone
+static/imagens/vegetacao_drone_02.jpg,vegetação,02/03/2017,drone
+static/imagens/vegetacao_drone_03.jpg,vegetação,07/06/2015,drone
+static/imagens/vegetacao_drone_04.jpg,vegetação,01/01/2017,drone
+static/imagens/vegetacao_satelite_01.jpg,vegetação,15/09/2023,satélite
+static/imagens/vegetacao_satelite_02.jpg,vegetação,09/12/2022,satélite
+static/imagens/vegetacao_satelite_03.jpg,vegetação,04/05/2023,satélite
+static/imagens/agua_drone_01.png,água,12/08/2024,drone
+static/imagens/agua_drone_02.png,água,29/04/2025,drone
+static/imagens/agua_drone_03.jpg,água,04/12/2024,drone
+static/imagens/agua_drone_04.jpg,água,04/12/2024,drone
+static/imagens/agua_satelite_01.png,água,25/10/2010,satélite
+static/imagens/agua_satelite_02.jpg,água,08/09/2018,satélite
+static/imagens/agua_satelite_03.jpg,água,05/08/2014,satélite
+static/imagens/agua_satelite_04.jpg,água,18/03/2001,satélite
+static/imagens/solo_exposto_drone_01.jpg,solo exposto,14/10/2014,drone
+static/imagens/solo_exposto_drone_02.jpg,solo exposto,17/09/2015,drone
+static/imagens/solo_exposto_drone_03.jpg,solo exposto,17/09/2015,drone
+static/imagens/solo_exposto_drone_04.jpg,solo exposto,17/09/2015,drone
+static/imagens/solo_exposto_satelite_01.jpg,solo exposto,27/07/2023,satélite
+static/imagens/solo_exposto_satelite_02.jpg,solo exposto,14/07/2023,satélite
+static/imagens/solo_exposto_satelite_03.jpg,solo exposto,01/09/2015,satélite
+static/imagens/solo_exposto_satelite_04.jpg,solo exposto,29/06/2018,satélite
