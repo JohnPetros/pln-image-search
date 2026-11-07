@@ -37,19 +37,25 @@ pergunta do usuário
   → exibição na página
 ```
 
-Exemplo:
+## Intenções
 
-| Pergunta | Intenção | Consulta Pandas | Resposta |
+Definidas em `intents.py`. Toda intenção aplica os parâmetros presentes na pergunta (`categoria`, `origem`, `ano`); por isso "quantas imagens?" e "quantas imagens de água?" são a mesma intenção.
+
+| Intenção | Exemplo de pergunta | Consulta Pandas | Resposta |
 |---|---|---|---|
-| "Quantas imagens estão catalogadas?" | `count_all` | `len(df)` | "No total, há X imagens cadastradas." |
-| "Quais imagens possuem vegetação?" | `list_by_category` | `df[df["categoria"] == "vegetação"]` | Lista de imagens exibidas na página |
+| `count_images` | "Quantas imagens estão catalogadas?" | `len(df)` | "No total, há 23 imagens cadastradas." |
+| `count_images` | "Quantas imagens de água há?" | `len(df[df["categoria"] == "água"])` | "Há 8 imagens de água." |
+| `list_images` | "Quais imagens possuem vegetação?" | `df[df["categoria"] == "vegetação"]` | "Encontrei 7 imagens de vegetação." + galeria |
+| `count_by_category` | "Quantas imagens há de cada categoria?" | `df["categoria"].value_counts()` | "Imagens, por categoria — água: 8 imagens; ..." |
+| `count_by_origin` | "Quantas imagens vieram de cada origem?" | `df["origem"].value_counts()` | "Imagens, por origem — drone: 12 imagens; ..." |
 
 ## Estrutura e responsáveis
 
 | Arquivo | Responsável | Conteúdo |
 |---|---|---|
-| `intents.py` | Todos | Intenções, frases de referência, chaves de `params` e valores válidos. Alterar só em acordo com o grupo. |
+| `intents.py` | Pessoa 1 | Intenções, frases de referência (8 a 10 por intenção), chaves de `params` e valores válidos. Usado também pela Pessoa 2; alterar só em acordo com o grupo. |
 | `data/metadata.csv` | Pessoa 1 | Catálogo das imagens. |
+| `data/fontes.csv` | Pessoa 1 | Origem, autor e licença de cada imagem. |
 | `static/imagens/` | Pessoa 1 | Arquivos das imagens (reais). |
 | `queries.py` | Pessoa 1 | `run_intent`: uma consulta Pandas por intenção. |
 | `nlp.py` | Pessoa 2 | `classify_query` e `extract_params`: pré-processamento, correção de digitação, BOW e cosseno. |
@@ -65,10 +71,12 @@ Arquivo `data/metadata.csv`, uma linha por imagem:
 
 | Coluna | Conteúdo | Exemplo |
 |---|---|---|
-| `arquivo` | Caminho relativo à raiz do projeto | `static/imagens/img_001.jpg` |
+| `arquivo` | Caminho relativo à raiz do projeto | `static/imagens/agua_drone_01.png` |
 | `categoria` | `vegetação`, `solo exposto` ou `água` | `água` |
-| `data` | Data da imagem no formato `dd/mm/yyyy` | `15/03/2024` |
-| `origem` | Origem da imagem | `satélite`, `drone` |
+| `data` | Data da imagem no formato `dd/mm/yyyy` | `12/08/2024` |
+| `origem` | `satélite` ou `drone` | `drone` |
+
+O catálogo tem 23 imagens reais do [Wikimedia Commons](https://commons.wikimedia.org): 7 de vegetação, 8 de água e 8 de solo exposto, metade de drone e metade de satélite (Sentinel-2, MODIS/NASA, Planet Labs, Axelspace). As datas vêm dos metadados originais de cada imagem. Título, página, autor e licença de cada uma estão em `data/fontes.csv`; as licenças são domínio público, CC0, CC BY e CC BY-SA, e exigem atribuição ao autor.
 
 ## Contrato entre os módulos
 
@@ -81,19 +89,22 @@ Arquivo `data/metadata.csv`, uma linha por imagem:
 
 ### `extract_params(text) -> dict` — `nlp.py`
 
-- Retorna um dicionário com todas as chaves de `params` definidas em `intents.py`, por exemplo `{"categoria": "água", "origem": "drone", "ano": None}`.
+- Retorna um dicionário com todas as chaves de `params` definidas em `intents.py`, por exemplo `{"categoria": "água", "origem": "drone", "ano": 2024}`. `ano` é um inteiro.
+- Os valores de `categoria` e `origem` devem ser escritos exatamente como no CSV (com acento): `"solo exposto"`, `"satélite"`.
 - As chaves usam os mesmos nomes das colunas do CSV.
 - Parâmetro não mencionado na pergunta vem como `None`.
 
 ### `run_intent(intent_id, params) -> dict` — `queries.py`
 
-- Retorna `{"answer": str, "images": [...]}`. Cada imagem traz as colunas do CSV.
+- Retorna `{"answer": str, "images": [...]}`. Cada imagem traz as colunas do CSV; a lista vem da mais recente para a mais antiga.
 - `"unknown"` responde "Não entendi a pergunta. Tente reformular."
-- Se faltar um parâmetro obrigatório da intenção, responde perguntando qual valor o usuário deseja (por exemplo, "Qual categoria? Opções: vegetação, solo exposto, água.").
+- Valor de `categoria` ou `origem` que não existe no catálogo responde com as opções válidas (por exemplo, "Não conheço categoria 'floresta'. Opções: vegetação, solo exposto, água.").
+- Se faltar um parâmetro obrigatório da intenção, responde perguntando qual valor o usuário deseja. Hoje nenhuma intenção tem parâmetro obrigatório.
 
 ## Convenções
 
-- Código (nomes de variáveis, funções e comentários) em **inglês**.
+- Nomes de variáveis e funções em **inglês**.
+- Comentários e docstrings **sucintos**, em **português**.
 - Dados, colunas do CSV, interface e documentação em **português**.
 
 ## Requisitos do enunciado
