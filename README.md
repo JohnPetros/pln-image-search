@@ -80,6 +80,27 @@ O catálogo tem 23 imagens reais do [Wikimedia Commons](https://commons.wikimedi
 
 ## Contrato entre os módulos
 
+### `GET /search?q=...` — `app.py`
+
+Devolve JSON com o resultado da pipeline. Os campos `intent`, `score` e `params` são exibidos
+abaixo da resposta na página, para tornar a classificação visível na apresentação.
+
+```json
+{
+  "query": "quais imagens possuem vegetação",
+  "intent": "list_images",
+  "score": 0.87,
+  "params": {"categoria": "vegetação", "origem": null, "ano": null},
+  "answer": "Encontrei 7 imagens de vegetação.",
+  "images": [
+    {"arquivo": "static/imagens/vegetacao_satelite_01.jpg",
+     "categoria": "vegetação", "data": "15/09/2023", "origem": "satélite"}
+  ]
+}
+```
+
+Com `q` vazio, responde "Digite uma pergunta para começar." sem acionar a pipeline.
+
 ### `classify_query(text) -> (intent_id, score)` — `nlp.py`
 
 - O vetorizador BOW é ajustado (`fit`) **somente** nas frases de referência de `intents.py`. Na pergunta do usuário usa-se `transform`, nunca `fit_transform`.
