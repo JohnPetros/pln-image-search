@@ -12,6 +12,8 @@ Motor de busca em linguagem natural sobre um catálogo de imagens de sensoriamen
 
 ## Como executar
 
+Requer **Python 3.11 ou mais novo** (as versões fixadas em `requirements.txt` não instalam no 3.10).
+
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
