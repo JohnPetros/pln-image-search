@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Busca semântica de imagens de sensoriamento remoto</title>
+  <link rel="icon" href="{{ url_for('static', filename='logo.png') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="header">
+    <img class="header__logo" src="{{ url_for('static', filename='logo.png') }}" alt="">
+    <div>
+      <h1 class="header__title">Busca semântica de imagens</h1>
+      <p class="header__subtitle">Pergunte em linguagem natural sobre o catálogo de sensoriamento remoto.</p>
+    </div>
+  </header>
+
+  <main class="main">
+    <form class="search" id="search-form" autocomplete="off">
+      <input
+        class="search__input"
+        id="search-input"
+        type="search"
+        name="q"
+        placeholder="Ex.: quais imagens de água foram feitas por drone?"
+        aria-label="Pergunta"
+        required>
+      <button class="search__button" type="submit">Buscar</button>
+    </form>
+
+    <ul class="examples" id="examples">
+      <li><button type="button" class="examples__chip">Quantas imagens estão catalogadas?</button></li>
+      <li><button type="button" class="examples__chip">Quais imagens possuem vegetação?</button></li>
+      <li><button type="button" class="examples__chip">Quantas imagens há de cada categoria?</button></li>
+      <li><button type="button" class="examples__chip">Quantas imagens vieram de cada origem?</button></li>
+      <li><button type="button" class="examples__chip">Mostre as fotos de solo exposto de 2015</button></li>
+    </ul>
+
+    <section class="result" id="result" hidden aria-live="polite">
+      <p class="result__answer" id="answer"></p>
+      <p class="result__debug" id="debug"></p>
+      <div class="gallery" id="gallery"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Imagens do Wikimedia Commons; autoria e licenças em <code>data/fontes.csv</code>.</p>
+  </footer>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

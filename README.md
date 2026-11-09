@@ -12,6 +12,8 @@ Motor de busca em linguagem natural sobre um catálogo de imagens de sensoriamen
 
 ## Como executar
 
+Requer **Python 3.11 ou mais novo** (as versões fixadas em `requirements.txt` não instalam no 3.10).
+
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
@@ -79,6 +81,27 @@ Arquivo `data/metadata.csv`, uma linha por imagem:
 O catálogo tem 23 imagens reais do [Wikimedia Commons](https://commons.wikimedia.org): 7 de vegetação, 8 de água e 8 de solo exposto, metade de drone e metade de satélite (Sentinel-2, MODIS/NASA, Planet Labs, Axelspace). As datas vêm dos metadados originais de cada imagem. Título, página, autor e licença de cada uma estão em `data/fontes.csv`; as licenças são domínio público, CC0, CC BY e CC BY-SA, e exigem atribuição ao autor.
 
 ## Contrato entre os módulos
+
+### `GET /search?q=...` — `app.py`
+
+Devolve JSON com o resultado da pipeline. Os campos `intent`, `score` e `params` são exibidos
+abaixo da resposta na página, para tornar a classificação visível na apresentação.
+
+```json
+{
+  "query": "quais imagens possuem vegetação",
+  "intent": "list_images",
+  "score": 0.87,
+  "params": {"categoria": "vegetação", "origem": null, "ano": null},
+  "answer": "Encontrei 7 imagens de vegetação.",
+  "images": [
+    {"arquivo": "static/imagens/vegetacao_satelite_01.jpg",
+     "categoria": "vegetação", "data": "15/09/2023", "origem": "satélite"}
+  ]
+}
+```
+
+Com `q` vazio, responde "Digite uma pergunta para começar." sem acionar a pipeline.
 
 ### `classify_query(text) -> (intent_id, score)` — `nlp.py`
 
