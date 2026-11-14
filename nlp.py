@@ -185,9 +185,6 @@ def extract_params(text: str) -> dict:
 def classify_query(text: str) -> tuple[str, float]:
     """Classifica a pergunta e preserva consultas com filtros desconhecidos."""
     intent_id, score = _best_match(text)
-    if intent_id != UNKNOWN_INTENT and score >= _MIN_SIMILARITY:
-        return intent_id, score
-
     params = extract_params(text)
     has_unknown_filter = (
         params["categoria"] is not None
@@ -206,5 +203,8 @@ def classify_query(text: str) -> tuple[str, float]:
         if tokens.intersection(count_cues):
             return "count_images", score
         return "list_images", score
+
+    if intent_id != UNKNOWN_INTENT and score >= _MIN_SIMILARITY:
+        return intent_id, score
 
     return UNKNOWN_INTENT, score

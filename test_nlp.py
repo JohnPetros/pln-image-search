@@ -83,6 +83,10 @@ class ClassifyQueryTests(unittest.TestCase):
     def test_unknown_filter_queries_keep_an_image_intent(self):
         self.assertEqual(nlp.classify_query("imagens de floresta")[0], "list_images")
         self.assertEqual(
+            nlp.classify_query("imagens feitas por balão")[0],
+            "list_images",
+        )
+        self.assertEqual(
             nlp.classify_query("quantas imagens de floresta")[0],
             "count_images",
         )
