@@ -114,6 +114,7 @@ Com `q` vazio, responde "Digite uma pergunta para começar." sem acionar a pipel
 
 - Retorna um dicionário com todas as chaves de `params` definidas em `intents.py`, por exemplo `{"categoria": "água", "origem": "drone", "ano": 2024}`. `ano` é um inteiro.
 - Os valores de `categoria` e `origem` devem ser escritos exatamente como no CSV (com acento): `"solo exposto"`, `"satélite"`.
+- Se a pergunta citar um valor que não existe no catálogo (por exemplo, "imagens de floresta"), `extract_params` devolve esse valor em `categoria` ou `origem`, e `run_intent` responde com as opções válidas.
 - As chaves usam os mesmos nomes das colunas do CSV.
 - Parâmetro não mencionado na pergunta vem como `None`.
 
