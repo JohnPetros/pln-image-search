@@ -46,9 +46,13 @@ def _build_spelling_vocabulary() -> tuple[str, ...]:
 
 _SPELLING_VOCABULARY = _build_spelling_vocabulary()
 
+_SPELLING_ALIASES = {"qnts": "quantas"}
+
 
 def _correct_word(word: str) -> str:
     """Corrige uma palavra quando há um único candidato próximo."""
+    if word in _SPELLING_ALIASES:
+        return _SPELLING_ALIASES[word]
     if len(word) < 4 or not word.isalpha() or word in _SPELLING_VOCABULARY:
         return word
 
@@ -95,8 +99,8 @@ _REFERENCE_MATRIX = _VECTORIZER.fit_transform(
     [example for _, example in _REFERENCE_EXAMPLES]
 )
 
-# Calibrado com perguntas variadas; a validação em test_nlp.py protege este valor.
-_MIN_SIMILARITY = 0.65
+# Calibrado com perguntas válidas e fora do domínio; test_nlp.py protege a acurácia.
+_MIN_SIMILARITY = 0.7
 
 
 def _best_match(text: str) -> tuple[str, float]:
@@ -114,14 +118,6 @@ def _best_match(text: str) -> tuple[str, float]:
     return _REFERENCE_INTENTS[best_index], float(similarities[best_index])
 
 
-def classify_query(text: str) -> tuple[str, float]:
-    """Classifica a pergunta pela frase de referência mais similar."""
-    intent_id, score = _best_match(text)
-    if intent_id == UNKNOWN_INTENT or score < _MIN_SIMILARITY:
-        return UNKNOWN_INTENT, score
-    return intent_id, score
-
-
 def _first_value(tokens: list[str], values: list[str]) -> str | None:
     """Encontra o primeiro valor válido, respeitando limites entre palavras."""
     matches = []
@@ -136,14 +132,47 @@ def _first_value(tokens: list[str], values: list[str]) -> str | None:
     return min(matches)[2]
 
 
+def _unknown_value_after(
+    tokens: list[str], source_tokens: list[str], markers: set[str]
+) -> str | None:
+    """Retorna um valor desconhecido que venha logo após uma preposição."""
+    for index, token in enumerate(tokens[:-1]):
+        if token not in markers:
+            continue
+
+        candidate = tokens[index + 1]
+        if (
+            not candidate.isalpha()
+            or candidate in _SPELLING_VOCABULARY
+            or index + 1 >= len(source_tokens)
+        ):
+            continue
+        return source_tokens[index + 1]
+    return None
+
+
 def extract_params(text: str) -> dict:
-    """Extrai os filtros mencionados e mantém os valores do catálogo."""
+    """Extrai filtros do catálogo ou preserva valores desconhecidos."""
     normalized_tokens = [
         _correct_word(word) for word in _normalize_text(text)
     ]
+    source_tokens = (
+        re.findall(r"[^\W_]+", text.lower(), flags=re.UNICODE)
+        if isinstance(text, str)
+        else []
+    )
     params = {key: None for key in PARAM_KEYS}
     params["categoria"] = _first_value(normalized_tokens, CATEGORIES)
+    if params["categoria"] is None:
+        params["categoria"] = _unknown_value_after(
+            normalized_tokens, source_tokens, {"de"}
+        )
+
     params["origem"] = _first_value(normalized_tokens, ORIGINS)
+    if params["origem"] is None:
+        params["origem"] = _unknown_value_after(
+            normalized_tokens, source_tokens, {"por"}
+        )
 
     if isinstance(text, str):
         year_match = re.search(r"(?<!\d)\d{4}(?!\d)", text)
@@ -151,3 +180,31 @@ def extract_params(text: str) -> dict:
             params["ano"] = int(year_match.group())
 
     return params
+
+
+def classify_query(text: str) -> tuple[str, float]:
+    """Classifica a pergunta e preserva consultas com filtros desconhecidos."""
+    intent_id, score = _best_match(text)
+    if intent_id != UNKNOWN_INTENT and score >= _MIN_SIMILARITY:
+        return intent_id, score
+
+    params = extract_params(text)
+    has_unknown_filter = (
+        params["categoria"] is not None
+        and params["categoria"] not in CATEGORIES
+    ) or (
+        params["origem"] is not None
+        and params["origem"] not in ORIGINS
+    )
+    tokens = set(_prepare_text(text).split())
+    image_cues = {"imagem", "imagens", "foto", "fotos"}
+    if has_unknown_filter and tokens.intersection(image_cues):
+        count_cues = {
+            "quantas", "quantos", "quantidade", "contar", "conte",
+            "total", "numero",
+        }
+        if tokens.intersection(count_cues):
+            return "count_images", score
+        return "list_images", score
+
+    return UNKNOWN_INTENT, score
