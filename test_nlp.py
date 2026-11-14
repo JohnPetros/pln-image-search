@@ -135,7 +135,10 @@ class ExtractParamsTests(unittest.TestCase):
 
     def test_value_matching_respects_word_boundaries(self):
         params = nlp.extract_params("imagem de aguamarinha e droneiro em 12024")
-        self.assertEqual(params, {key: None for key in PARAM_KEYS})
+        self.assertEqual(
+            params,
+            {"categoria": "aguamarinha", "origem": None, "ano": None},
+        )
 
     def test_abbreviated_count_query_uses_count_intent(self):
         intent_id, _ = nlp.classify_query("qnts imagens de vegetacao")
