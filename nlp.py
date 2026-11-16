@@ -46,6 +46,7 @@ _WORD_COUNTS = _build_word_counts()
 _SPELLING_VOCABULARY = frozenset(_WORD_COUNTS)
 
 _SPELLING_ALIASES = {"qnts": "quantas"}
+_YEAR_TOKEN = "ano"
 
 
 def _build_speller(distance: int) -> SpellChecker:
@@ -77,6 +78,8 @@ def _correct_word(word: str) -> str:
 def _prepare_text(text: str) -> str:
     """Normaliza, corrige erros próximos e remove palavras funcionais."""
     tokens = (_correct_word(word) for word in _normalize_text(text))
+    # Qualquer ano vira o mesmo token, para casar com as frases de referência.
+    tokens = (_YEAR_TOKEN if re.fullmatch(r"\d{4}", word) else word for word in tokens)
     return " ".join(word for word in tokens if word not in _STOPWORDS)
 
 
