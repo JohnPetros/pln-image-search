@@ -5,7 +5,7 @@ from flask import Flask, jsonify, render_template, request
 from nlp import classify_query, extract_params
 from queries import run_intent
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="public/static")
 
 
 @app.get("/")
