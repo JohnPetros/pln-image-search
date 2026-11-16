@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="static/logo.png" alt="Logo do projeto" width="160">
+  <img src="public/static/logo.png" alt="Logo do projeto" width="160">
 </p>
 
 # PC.6 — Busca semântica de imagens de sensoriamento remoto
@@ -22,6 +22,20 @@ python app.py
 ```
 
 Depois, abra http://127.0.0.1:5000 no navegador.
+
+## Deploy na Vercel
+
+O projeto está pronto para a Vercel (opcional; o enunciado pede apenas rodar localmente):
+
+- `app.py` expõe o objeto `app`, que a Vercel detecta sozinha.
+- Os arquivos estáticos ficam em `public/`, servidos pela CDN da Vercel. Localmente, o Flask usa a mesma pasta (`static_folder="public/static"`), então as URLs são iguais.
+- `.python-version` fixa o Python 3.12 e `requirements.txt` lista as dependências.
+
+```bash
+npm i -g vercel
+vercel dev      # roda localmente com o ambiente da Vercel
+vercel deploy   # publica
+```
 
 ## Arquitetura
 
@@ -58,14 +72,14 @@ Definidas em `intents.py`. Toda intenção aplica os parâmetros presentes na pe
 | `intents.py` | Pessoa 1 | Intenções, frases de referência (8 a 10 por intenção), chaves de `params` e valores válidos. Usado também pela Pessoa 2; alterar só em acordo com o grupo. |
 | `data/metadata.csv` | Pessoa 1 | Catálogo das imagens. |
 | `data/fontes.csv` | Pessoa 1 | Origem, autor e licença de cada imagem. |
-| `static/imagens/` | Pessoa 1 | Arquivos das imagens (reais). |
+| `public/static/imagens/` | Pessoa 1 | Arquivos das imagens (reais). |
 | `queries.py` | Pessoa 1 | `run_intent`: uma consulta Pandas por intenção. |
 | `nlp.py` | Pessoa 2 | `classify_query` e `extract_params`: pré-processamento, correção de digitação, BOW e cosseno. |
 | `app.py` | Pessoa 3 | Servidor Flask com as rotas `/` (página) e `/search` (JSON). |
-| `templates/index.html`, `static/script.js`, `static/style.css` | Pessoa 3 | Página única: campo de busca, resposta e galeria de imagens. |
+| `templates/index.html`, `public/static/script.js`, `public/static/style.css` | Pessoa 3 | Página única: campo de busca, resposta e galeria de imagens. |
 | `requirements.txt`, `README.md` | Pessoa 3 | Dependências e documentação. |
 | `docs/arquitetura.svg`, `docs/arquitetura.png` | Pessoa 3 | Diagrama da arquitetura (editar o SVG e regenerar o PNG). |
-| `static/logo.png` | — | Logo do projeto. |
+| `public/static/logo.png` | — | Logo do projeto. |
 
 ## Base de metadados
 
@@ -73,7 +87,7 @@ Arquivo `data/metadata.csv`, uma linha por imagem:
 
 | Coluna | Conteúdo | Exemplo |
 |---|---|---|
-| `arquivo` | Caminho relativo à raiz do projeto | `static/imagens/agua_drone_01.png` |
+| `arquivo` | Caminho público da imagem (o arquivo fica em `public/`) | `static/imagens/agua_drone_01.png` |
 | `categoria` | `vegetação`, `solo exposto` ou `água` | `água` |
 | `data` | Data da imagem no formato `dd/mm/yyyy` | `12/08/2024` |
 | `origem` | `satélite` ou `drone` | `drone` |

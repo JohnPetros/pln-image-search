@@ -1,0 +1,5 @@
+.venv
+docs
+test_nlp.py
+__pycache__
+*.pyc
