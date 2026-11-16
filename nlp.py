@@ -2,8 +2,9 @@
 
 import re
 import unicodedata
+from collections import Counter
 
-from nltk.metrics.distance import edit_distance
+from spellchecker import SpellChecker
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -30,50 +31,47 @@ def _normalize_text(text: str) -> list[str]:
     return re.findall(r"[a-z0-9]+", without_accents)
 
 
-def _build_spelling_vocabulary() -> tuple[str, ...]:
-    words = set()
-    texts = [
-        example
-        for definition in INTENTS.values()
-        for example in definition["examples"]
-    ]
-    texts.extend(CATEGORIES)
-    texts.extend(ORIGINS)
-    for text in texts:
-        words.update(_normalize_text(text))
-    return tuple(sorted(words))
+def _build_word_counts() -> Counter:
+    """Frequência das palavras das frases de referência e dos valores do catálogo."""
+    counts = Counter()
+    for definition in INTENTS.values():
+        for example in definition["examples"]:
+            counts.update(_normalize_text(example))
+    for value in CATEGORIES + ORIGINS:
+        counts.update(_normalize_text(value))
+    return counts
 
 
-_SPELLING_VOCABULARY = _build_spelling_vocabulary()
+_WORD_COUNTS = _build_word_counts()
+_SPELLING_VOCABULARY = frozenset(_WORD_COUNTS)
 
 _SPELLING_ALIASES = {"qnts": "quantas"}
 
 
+def _build_speller(distance: int) -> SpellChecker:
+    """Corretor com o vocabulário do projeto (sem dicionário externo)."""
+    speller = SpellChecker(language=None, distance=distance)
+    speller.word_frequency.load_words(list(_WORD_COUNTS.elements()))
+    return speller
+
+
+_SPELLER_1 = _build_speller(1)
+# Palavras longas toleram duas edições.
+_SPELLER_2 = _build_speller(2)
+
+
 def _correct_word(word: str) -> str:
-    """Corrige uma palavra quando há um único candidato próximo."""
+    """Corrige pela palavra conhecida mais próxima; em empate, a mais frequente."""
     if word in _SPELLING_ALIASES:
         return _SPELLING_ALIASES[word]
-    if len(word) < 4 or not word.isalpha() or word in _SPELLING_VOCABULARY:
+    if len(word) < 4 or not word.isalpha() or word in _WORD_COUNTS:
         return word
 
-    max_distance = 1 if len(word) <= 7 else 2
-    candidates = []
-    for candidate in _SPELLING_VOCABULARY:
-        if abs(len(candidate) - len(word)) > max_distance:
-            continue
-        distance = edit_distance(word, candidate, transpositions=True)
-        if distance <= max_distance:
-            candidates.append((distance, candidate))
-
+    speller = _SPELLER_2 if len(word) >= 8 else _SPELLER_1
+    candidates = speller.candidates(word)
     if not candidates:
         return word
-
-    best_distance = min(distance for distance, _ in candidates)
-    best_candidates = [
-        candidate for distance, candidate in candidates
-        if distance == best_distance
-    ]
-    return best_candidates[0] if len(best_candidates) == 1 else word
+    return max(sorted(candidates), key=_WORD_COUNTS.get)
 
 
 def _prepare_text(text: str) -> str:
