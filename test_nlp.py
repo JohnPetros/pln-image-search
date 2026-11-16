@@ -42,6 +42,8 @@ class ClassifyQueryTests(unittest.TestCase):
         questions = {
             "quantas fotos existem no banco!": "count_images",
             "exiba imagens de água por satélite": "list_images",
+            "Mostre as fotos de 2019": "list_images",
+            "quantas imagens são de 2018?": "count_images",
             "resumo rápido por categoria": "count_by_category",
             "resumo rápido por origem": "count_by_origin",
         }
