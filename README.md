@@ -8,33 +8,63 @@ Trabalho prático PC.6 da disciplina de Processamento de Linguagem Natural (Prof
 
 Motor de busca em linguagem natural sobre um catálogo de imagens de sensoriamento remoto. O usuário digita uma pergunta, o sistema a representa como **Bag of Words**, compara com frases de referência por **similaridade de cosseno** e, de acordo com a frase de referência mais similar, executa a consulta correspondente em um **DataFrame Pandas** carregado de um arquivo CSV.
 
-**Stack:** Python 3, Flask, Pandas, scikit-learn e NLTK.
+**Stack:** Python 3, Flask, Pandas, scikit-learn e pyspellchecker.
+
+**Online:** https://pln-image-search.vercel.app
 
 ## Como executar
 
-Requer **Python 3.11 ou mais novo** (as versões fixadas em `requirements.txt` não instalam no 3.10).
+Requer **Python 3.11 ou mais novo** (as versões fixadas em `requirements.txt` não instalam no 3.10) e Git.
+
+1. Clone o repositório e entre na pasta:
+
+   ```bash
+   git clone https://github.com/JohnPetros/pln-image-search.git
+   cd pln-image-search
+   ```
+
+2. Crie e ative o ambiente virtual:
+
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate      # Windows (PowerShell): .venv\Scripts\Activate.ps1
+   ```
+
+3. Instale as dependências:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Inicie o servidor:
+
+   ```bash
+   python app.py
+   ```
+
+5. Abra http://127.0.0.1:5000 no navegador e digite uma pergunta, por exemplo "Quantas imagens de água há?".
+
+Para rodar os testes do módulo de PLN (precisa das dependências instaladas):
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-python app.py
+python -m unittest -v
 ```
-
-Depois, abra http://127.0.0.1:5000 no navegador.
 
 ## Deploy na Vercel
 
-O projeto está pronto para a Vercel (opcional; o enunciado pede apenas rodar localmente):
+O site online é publicado na Vercel (opcional; o enunciado pede apenas rodar localmente). Todo push na `main` gera um deploy de produção, e cada pull request gera um preview.
 
-- `app.py` expõe o objeto `app`, que a Vercel detecta sozinha.
+- `vercel.json` define `"framework": "flask"`. Sem ele, a Vercel trata a pasta `public/` como site estático e responde 404.
+- `app.py` expõe o objeto `app`, que a Vercel usa como ponto de entrada.
 - Os arquivos estáticos ficam em `public/`, servidos pela CDN da Vercel. Localmente, o Flask usa a mesma pasta (`static_folder="public/static"`), então as URLs são iguais.
 - `.python-version` fixa o Python 3.12 e `requirements.txt` lista as dependências.
+
+Para rodar com o ambiente da Vercel ou publicar manualmente:
 
 ```bash
 npm i -g vercel
 vercel dev      # roda localmente com o ambiente da Vercel
-vercel deploy   # publica
+vercel deploy   # publica um preview
 ```
 
 ## Arquitetura
