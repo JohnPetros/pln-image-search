@@ -13,9 +13,29 @@ from intents import CATEGORIES, INTENTS, ORIGINS, PARAM_KEYS, UNKNOWN_INTENT
 
 # Artigos e preposições não ajudam a distinguir as intenções.
 _STOPWORDS = {
-    "a", "as", "ao", "aos", "da", "das", "de", "do", "dos",
-    "e", "em", "na", "nas", "no", "nos", "o", "os", "qual",
-    "que", "um", "uma", "uns", "umas",
+    "a",
+    "as",
+    "ao",
+    "aos",
+    "da",
+    "das",
+    "de",
+    "do",
+    "dos",
+    "e",
+    "em",
+    "na",
+    "nas",
+    "no",
+    "nos",
+    "o",
+    "os",
+    "qual",
+    "que",
+    "um",
+    "uma",
+    "uns",
+    "umas",
 }
 
 
@@ -25,7 +45,8 @@ def _normalize_text(text: str) -> list[str]:
         return []
 
     without_accents = "".join(
-        char for char in unicodedata.normalize("NFKD", text.lower())
+        char
+        for char in unicodedata.normalize("NFKD", text.lower())
         if not unicodedata.combining(char)
     )
     return re.findall(r"[a-z0-9]+", without_accents)
@@ -126,7 +147,7 @@ def _first_value(tokens: list[str], values: list[str]) -> str | None:
         value_tokens = _normalize_text(value)
         size = len(value_tokens)
         for start in range(len(tokens) - size + 1):
-            if tokens[start:start + size] == value_tokens:
+            if tokens[start : start + size] == value_tokens:
                 matches.append((start, -size, value))
     if not matches:
         return None
@@ -154,9 +175,7 @@ def _unknown_value_after(
 
 def extract_params(text: str) -> dict:
     """Extrai filtros do catálogo ou preserva valores desconhecidos."""
-    normalized_tokens = [
-        _correct_word(word) for word in _normalize_text(text)
-    ]
+    normalized_tokens = [_correct_word(word) for word in _normalize_text(text)]
     source_tokens = (
         re.findall(r"[^\W_]+", text.lower(), flags=re.UNICODE)
         if isinstance(text, str)
@@ -188,18 +207,19 @@ def classify_query(text: str) -> tuple[str, float]:
     intent_id, score = _best_match(text)
     params = extract_params(text)
     has_unknown_filter = (
-        params["categoria"] is not None
-        and params["categoria"] not in CATEGORIES
-    ) or (
-        params["origem"] is not None
-        and params["origem"] not in ORIGINS
-    )
+        params["categoria"] is not None and params["categoria"] not in CATEGORIES
+    ) or (params["origem"] is not None and params["origem"] not in ORIGINS)
     tokens = set(_prepare_text(text).split())
     image_cues = {"imagem", "imagens", "foto", "fotos"}
     if has_unknown_filter and tokens.intersection(image_cues):
         count_cues = {
-            "quantas", "quantos", "quantidade", "contar", "conte",
-            "total", "numero",
+            "quantas",
+            "quantos",
+            "quantidade",
+            "contar",
+            "conte",
+            "total",
+            "numero",
         }
         if tokens.intersection(count_cues):
             return "count_images", score
